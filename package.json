@@ -1,15 +1,19 @@
 {
   "name": "vidtwit",
   "version": "1.0.0",
-  "description": "",
+  "description": "VidTwit merges video sharing with social interactions, fostering a vibrant community of engaged users.",
+  "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node src/index.js",
+    "dev": "nodemon -r dotenv/config --experimental-json-modules src/index.js"
   },
   "keywords": [
     "VidTwit",
     "video sharing",
-    "tweet"
+    "tweet",
+    "backend",
+    "JavaScript"
   ],
   "author": "Raushan Kumar",
   "license": "ISC",
