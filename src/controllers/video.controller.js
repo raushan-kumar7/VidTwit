@@ -15,6 +15,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
     sortType = "desc",
     userId,
   } = req.query;
+
   const filter = {};
   if (query) {
     filter.title = { $regex: query, $options: "i" };
@@ -37,6 +38,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
     .status(200)
     .json(
       new ApiResponse(
+        200,
         videos,
         page,
         limit,
@@ -65,14 +67,13 @@ const publishAVideo = asyncHandler(async (req, res) => {
     description,
     videoUrl,
     userId: req.user._id,
-    createdAt: new Date(),
   });
 
   await video.save();
 
   return res
     .status(201)
-    .json(new ApiResponse(video, 201, "Video published successfully"));
+    .json(new ApiResponse(201, video, "Video published successfully"));
 });
 
 const getVideoById = asyncHandler(async (req, res) => {
@@ -88,7 +89,7 @@ const getVideoById = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(video, 200, "Video fetched successfully"));
+    .json(new ApiResponse(200, video, "Video fetched successfully"));
 });
 
 const updateVideo = asyncHandler(async (req, res) => {
@@ -98,29 +99,25 @@ const updateVideo = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Invalid video ID");
   }
 
-  const video = await Video.findById(videoId);
-  if (!video) {
+  const updatedVideo = await Video.findByIdAndUpdate(
+    videoId,
+    {
+      $set: {
+        title,
+        description,
+        thumbnail,
+      },
+    },
+    { new: true }
+  );
+
+  if (!updatedVideo) {
     throw new ApiError(404, "Video not found");
   }
 
-  if (title) {
-    video.title = title;
-  }
-
-  if (description) {
-    video.description = description;
-  }
-
-  if (thumbnail) {
-    video.thumbnail = thumbnail;
-  }
-
-  video.updatedAt = new Date();
-  await video.save();
-
   return res
     .status(200)
-    .json(new ApiResponse(video, 200, "Video updated successfully"));
+    .json(new ApiResponse(200, updatedVideo, "Video updated successfully"));
 });
 
 const deleteVideo = asyncHandler(async (req, res) => {
@@ -136,7 +133,7 @@ const deleteVideo = asyncHandler(async (req, res) => {
 
   return res
     .status(204)
-    .json(new ApiResponse(null, 204, "Video deleted successfully"));
+    .json(new ApiResponse(204, null, "Video deleted successfully"));
 });
 
 const togglePublishStatus = asyncHandler(async (req, res) => {
@@ -157,7 +154,7 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(
-      new ApiResponse(video, 200, "Video publish status toggled successfully")
+      new ApiResponse(200, video, "Video publish status toggled successfully")
     );
 });
 
